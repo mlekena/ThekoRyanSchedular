@@ -1,0 +1,2 @@
+Compile Instructions:
+gcc -Wall -g main.c processes.c -o schedule
