@@ -1,0 +1,4 @@
+TODO list
+
+1. complete FCFS by fixing the errors
+2. figure out print statements

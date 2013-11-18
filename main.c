@@ -7,6 +7,7 @@
 
 // include header files from the dictionary and word_list
 #include "processes.h"
+#include "FCFS.h"
 
 #define MAX_JOBS 100
 
@@ -73,13 +74,14 @@ int main (int argc, char * argv [])
 	}
 
 
-   // we'll always assume a basic quanta is 100 time units
-   //int time_step = 100;
+	//we'll always assume a basic quanta is 100 time units
+   int time_step = 100;
    
    // create the system emulation of processes from the file
     Processes *proc = proc_create(filename);
    
    //setup first job
+    int returnVal = runFCFS(proc, &time_step);
    // You may assume that there is a job 0 which arrived at time 0 and is ready to go
 
 

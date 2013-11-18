@@ -171,10 +171,27 @@ int proc_norun_check_arrival(Processes *proc, int time_interval, int current_tim
   return timeUntilEvent;
 }
 
+int findShortest(arrivalTime, blockTime, timeInterval)
+{
+  int timeArray[] = {arrivalTime, blockTime, timeInterval};
+  int i =0;
+  int indexOfShortest = 0;
+  for (i = 0; i < 3; i++)
+    {
+      if(timeArray[indexOfShortest] >= timeArray[i])
+	{
+	  indexOfShortest = i;
+	}
+    }
+  //0 means arrivalTime happend first
+  //1 means blockTime happend first
+  //2 means we ran to the end of the time interval 
+  return indexOfShortest;
+}
 int run_proc(Processes * proc, int proc_id, int time_interval, int * block, int * finish, int current_time, int *arrival, int *proc_arrival)
 {
 
-  int arrivalTime = time_interval + 1, blockTime = time_interval + 1, finishTime = time_interval + 1;
+  int arrivalTime = time_interval + 1, blockTime = time_interval + 1;
   // YOU NEED TO COMPLETE THIS
   // return -1 if proc is invalid or proc_id is invalid.
   if(proc == NULL || proc->size == 0 || proc_id < 0 || proc_id > proc->size)
@@ -207,34 +224,56 @@ int run_proc(Processes * proc, int proc_id, int time_interval, int * block, int 
       arrivalTime = (current_time + time_interval) - proc->array[nextProc_id].start_time;
     }
   // See if the process blocks during this time interval
-  if(proc->array[proc_id].array[proc->array[proc_id].curr_event] <= current_time + time_interval)
+  if(proc->array[proc_id].array[proc->array[proc_id].curr_event] - proc->array[proc_id].progress <= time_interval)
     {
       blockTime = (proc->array[proc_id].array[proc->array[proc_id].curr_event] + current_time) -  proc->array[proc_id].start_time;
     }
+
+  
+  //0 means arrivalTime happend first
+  //1 means blockTime happend first
+  //2 means we ran to the end of the time interval
+  int index_of_shortest = findShortest(arrivalTime, blockTime, time_interval);
+
   //////////////////////////////////////////////////////////////////////////////////////////////
   // check to see if anyone arrives during this time interval
-  if(proc->array[nextProc_id].start_time <= current_time + time_interval)
+  if(index_of_shortest == 0)
     {
       DEBUGPRINTF("A process arrived during run_proc\n");
-      proc->array[proc_id].progress = proc->array[nextProc_id].start_time - proc->array[nextProc_id].start_time;
+      proc->array[proc_id].progress = proc->array[nextProc_id].start_time - current_time;
       proc->array[proc_id].total_progress += proc->array[proc_id].progress;
       proc->array[nextProc_id].announced = 1; 
       *block = 1;
       return proc->array[proc_id].progress; 
     }
 
-  // See if the process blocks during this time interval
-  if(proc->array[proc_id].array[proc->array[proc_id].curr_event] <= current_time + time_interval)
+  // See if the process blocks or finishes during this time interval
+  else if (index_of_shortest == 1)
     {
-      DEBUGPRINTF("A blocking event occured during run_proc.\n");
+      
       proc->array[proc_id].progress = (proc->array[proc_id].array[proc->array[proc_id].curr_event] + current_time) -  proc->array[proc_id].start_time;
       proc->array[proc_id].total_progress += proc->array[proc_id].progress;
+      
       proc->array[proc_id].progress = 0;
       proc->array[proc_id].curr_event++;
-      
-      *block = 1;
+      if(proc->array[proc_id].total_progress == proc->array[proc_id].total_time)
+	{
+	  DEBUGPRINTF("process finished running during run_proc.\n");
+	  *finish = 1;
+	}
+      else
+	{
+	  DEBUGPRINTF("A blocking event occured during run_proc.\n");
+	  *block = 1;
+	}
 
       return proc->array[proc_id].progress; 
+    }
+
+  //if we ran to end of time interval 
+  else if (index_of_shortest == 2)
+    {
+      current_time += time_interval;
     }
   // run to the shortest of (someone arriving, someone blocking, time_interval).
   //
