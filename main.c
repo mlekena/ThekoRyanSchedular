@@ -26,74 +26,104 @@ exit(0);
 
 void print_finished()
 {
-	/*  Fill in with your stats!
-	int i =0;
+  /*// Fill in with your stats!
+	int i = 0;
 	printf("**********  SUMMARY ***********\n");
 	printf("\tStart\tend\trun\tblocks\tutil percent\n");
-	for(;i<num_jobs;i++)
+	for(i=0;i<num_jobs;i++)
 	{
 		printf("PID%d:\t%d\t%d\t%d\t%d\t%1.3f\n",XX,XX,XX,XX,XX,XX);
 	}
 	printf("Mean Time to Finish:\t%d\n",XX);
 	printf("Total idle time:\t%d\n",XX);
-	*/
+  */	
 }
 
 int main (int argc, char * argv [])
 {
-	int j = 1;
-	algorithm = -1;
+
+  int j = 1;
+  algorithm = -1;
+  if(argc != 5)
+    {
+      print_usage();
+    }
+
+	
+  // process command line arguments
+  while (j < argc) {
+    if (strcmp ("-alg", argv [j]) == 0) {
+      j++;
+      if (j >= argc)
+	print_usage ();
+      algorithm = atoi (argv [j]);
+      j++;
+    } else if (strcmp ("-file", argv [j]) == 0) {
+      j++;
+      if (j >= argc)
+	print_usage ();
+      filename = argv [j];
+      j++;
+    }
+    else{
+      j++;
+    }
+  }
+  if((algorithm == -1) || (filename==NULL))
+    {
+      print_usage();
+    }
+
+  //we'll always assume a basic quanta is 100 time units
+  int time_step = 100;
+  int curr_time = 0;
+  // create the system emulation of processes from the file
+  Processes *proc = proc_create(filename);
+
+  int zero = 0;
+
+  ////////////////////////////////////////////////
+  int returnVal = run_proc(proc, 0, time_step, &zero,&zero,curr_time,&zero,&zero);
+  if(returnVal == -1)
+    {
+      proc_norun_check_arrival(proc, time_step, curr_time, 0, 0);
+    }
+  else
+    {
+      curr_time += returnVal;
+    }
+	
+  proc_print(proc);
+////////////////////////////////////////////////
+  returnVal = run_proc(proc, 0, time_step, &zero,&zero,curr_time,&zero,&zero);
+  if(returnVal == -1)
+    {
+      proc_norun_check_arrival(proc, time_step, curr_time, 0, 0);
+    }
+  else
+    {
+      curr_time += returnVal;
+    }
+	
+  proc_print(proc);
+
+	
+  
+
+  //setup first job
+  // int returnVal = runFCFS(proc, &time_step);
+  // You may assume that there is a job 0 which arrived at time 0 and is ready to go
 
 
-	if(argc!=5)
-	{
-		print_usage();
-	}
-	// process command line arguments
-	while (j < argc) {
-		if (strcmp ("-alg", argv [j]) == 0) {
-			j++;
-			if (j >= argc)
-				print_usage ();
-			algorithm = atoi (argv [j]);
-			j++;
-		} else if (strcmp ("-file", argv [j]) == 0) {
-			j++;
-			if (j >= argc)
-				print_usage ();
-			filename = argv [j];
-			j++;
-		}
-		else{
-		j++;
-		}
-	}
-	if((algorithm == -1) || (filename==NULL))
-	{
-		print_usage();
-	}
+  // Here is the bulk of your work.  You will need to run until you've finished running all the
+  // incoming processes.  (You may assume that when you have finished all the jobs you know about, you are
+  // done.  Arrival times will always be early enough to ensure future processes have arrived before
+  // you have finished previous ones.)
 
+  print_finished();
 
-	//we'll always assume a basic quanta is 100 time units
-   int time_step = 100;
-   
-   // create the system emulation of processes from the file
-    Processes *proc = proc_create(filename);
-   
-   //setup first job
-    int returnVal = runFCFS(proc, &time_step);
-   // You may assume that there is a job 0 which arrived at time 0 and is ready to go
-
-
-   // Here is the bulk of your work.  You will need to run until you've finished running all the
-   // incoming processes.  (You may assume that when you have finished all the jobs you know about, you are
-   // done.  Arrival times will always be early enough to ensure future processes have arrived before
-   // you have finished previous ones.)
-
-   print_finished();
-
-   proc_destroy(proc);
-   free(proc);
-   proc=NULL;
-   return 0;
+  proc_destroy(proc);
+  free(proc);
+  proc=NULL;
+  return 0;
 }

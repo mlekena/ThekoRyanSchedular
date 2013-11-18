@@ -1,5 +1,5 @@
 CC = gcc
-FILES = main.c processes.c FCFS.c
+FILES = main.c processes.c
 OUT = schedule
 
 build: $(FILES)

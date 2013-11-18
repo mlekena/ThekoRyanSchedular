@@ -274,6 +274,7 @@ int run_proc(Processes * proc, int proc_id, int time_interval, int * block, int 
   else if (index_of_shortest == 2)
     {
       current_time += time_interval;
+      return time_interval;
     }
   // run to the shortest of (someone arriving, someone blocking, time_interval).
   //
