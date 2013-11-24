@@ -8,8 +8,10 @@
 // include header files from the dictionary and word_list
 #include "processes.h"
 #include "FCFS.h"
+#include "RR.h"
 
 #define MAX_JOBS 100
+#define DEBUGPRINTF if(0){}else printf
 
 int algorithm;
 char * filename;
@@ -76,40 +78,38 @@ int main (int argc, char * argv [])
 
   //we'll always assume a basic quanta is 100 time units
   int time_step = 100;
-  int curr_time = 0;
+  //int curr_time = 0;
   // create the system emulation of processes from the file
   Processes *proc = proc_create(filename);
-
+/*
   int zero = 0;
-
-  ////////////////////////////////////////////////
-  int returnVal = run_proc(proc, 0, time_step, &zero,&zero,curr_time,&zero,&zero);
-  if(returnVal == -1)
+  int done = 0;
+  int blocked = 0;
+  int arrival = 0;
+  int proc_arrival = 0;
+  int count = 0;
+  ////////////////////////////////////////////////////////////////////////////////////////////////
+    while(count < 10)
     {
-      proc_norun_check_arrival(proc, time_step, curr_time, 0, 0);
+      count++;
+      DEBUGPRINTF("ran test while\n");
+      int returnVal = 0;
+      if(returnVal == -1 || blocked == 1)
+	{
+	  returnVal = proc_norun_check_arrival(proc, time_step, curr_time, &arrival, &proc_arrival);
+	  curr_time += returnVal;
+	}
+      else
+	{
+	  int returnVal = run_proc(proc, 0, time_step, &blocked, &done, curr_time, &zero, &zero);
+	  curr_time += returnVal;
+	}
+      
+      proc_print(proc);
+      DEBUGPRINTF("Current Time = %d\n", curr_time);
+      ////////////////////////////////////////////////////////////////////////////////////////////////
     }
-  else
-    {
-      curr_time += returnVal;
-    }
-	
-  proc_print(proc);
-////////////////////////////////////////////////
-  returnVal = run_proc(proc, 0, time_step, &zero,&zero,curr_time,&zero,&zero);
-  if(returnVal == -1)
-    {
-      proc_norun_check_arrival(proc, time_step, curr_time, 0, 0);
-    }
-  else
-    {
-      curr_time += returnVal;
-    }
-	
-  proc_print(proc);
-
-	
-  
-
+  */
   //setup first job
   // int returnVal = runFCFS(proc, &time_step);
   // You may assume that there is a job 0 which arrived at time 0 and is ready to go
@@ -120,6 +120,9 @@ int main (int argc, char * argv [])
   // done.  Arrival times will always be early enough to ensure future processes have arrived before
   // you have finished previous ones.)
 
+
+  //runFCFS(proc,time_step);
+  runRR(proc,time_step);
   print_finished();
 
   proc_destroy(proc);

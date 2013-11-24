@@ -5,16 +5,15 @@
 #include <limits.h>
 
 #include "processes.h"
-#include "RunningProcesses.h"
-/*//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////NODE  STRUCT CODE//////////////////////////////////////////////////////////////////
 typedef struct Node 
 {
-int procID;
-struct Node *next;
-int remainingBlockTime;
-int isBlocked;
+  int procID;
+  struct Node *next;
+  int remainingBlockTime;
+  int isBlocked;
 }Node;
 
 typedef struct RunningProcesses
@@ -61,9 +60,9 @@ int addProc(RunningProcesses * rpList, int procID)
 int removeFirstProc(RunningProcesses *rpList)
 {
   if(rpList->size == 0)
-    {
-      return -1;
-    }
+  {
+    return -1;
+  }
   else if(rpList->size == 1)
     {
       free(rpList->head);
@@ -133,7 +132,7 @@ int printProcesses(RunningProcesses * rp)
   else
     {
       printf("lIST IS EMPTY\n");
-      return 0;
+	return 0;
     }
 
   while(temp != NULL)
@@ -146,99 +145,9 @@ int printProcesses(RunningProcesses * rp)
 //////////////////////////////////////////////END OF LINKED LIST STRUCT//////////////////////////////////////////////////
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-int runFCFS(Processes *proc, int time_interval)
+int runRR(Processes *proc, int time_interval)
 {
 
-  if(proc == NULL)
-    {
-      DEBUGPRINTF("ERROR: No process list passed to FCFS\n");
-      exit(1);
-    }
-  RunningProcesses * rp = createRunningProcesses();
-  addProc(rp,0);
-  int runTime = time_interval;
-  Node * temp = NULL;
-
-  int block = 0;
-  int arrival = 0;
-  int proc_arrival = 0;
-  int current_time = 0;
-  int finish = 0;
-  int runProcReturn = 0;
-  while(rp->size != 0)
-    {
-      //reset
-      block = 0;
-      arrival = 0;
-      proc_arrival = 0;
-      finish = 0;
-      runProcReturn = 0;
-      //
-      temp = rp->head;
-      runTime = time_interval;
-      //find the shortest blocktime to run up too
-      while (temp != NULL  && temp->isBlocked != 0)//0 is not blocked 1 is blocked
-	{
-	  if (temp->remainingBlockTime < runTime)
-	    {
-	      runTime = temp->remainingBlockTime;
-	    }
-	  temp = temp->next;
-	}
-      //NOTE
-      //If TEMP==NULL then we can do run_noProc_check else if temp is a proc then do run_proc
-      if (temp != NULL)
-	{
-	  runProcReturn = run_proc(proc, temp->procID, runTime, &block, &finish, current_time, &arrival, &proc_arrival);
-	}
-      else
-	{
-	  runProcReturn = proc_norun_check_arrival(proc, time_interval, current_time, &arrival, &proc_arrival);
-	}
-      if (runProcReturn != -1)
-	{
-	  current_time += runProcReturn;
-	}
-      //arrival found
-      if (arrival == 1)
-	{
-	  addProc(rp,proc_arrival);
-	}
-      //block found
-      if(block == 1)
-	{
-	  temp->isBlocked = 1;
-	}
-      //finish process
-      if (finish == 1)
-	{
-	  removeProc(rp,temp->procID);
-	}
-      
-      if (rp->size != 0)
-	{
-	  temp = rp->head;
-	}
-      //increment all times
-      while (temp != NULL  && temp->isBlocked != 0 && runProcReturn != -1)//0 is not blocked 1 is blocked
-	{
-	  if (temp->isBlocked == 1)
-	    {
-	      temp->remainingBlockTime -= runProcReturn;
-	    }
-	  if(temp->remainingBlockTime <= 0)//unblock processthat have done there time in the slammer
-	    {
-	      temp->isBlocked = 0;
-	      temp->remainingBlockTime = 200;
-	    }
-	  temp = temp->next;
-	}
-    
-      printProcesses(rp);
-      proc_print(proc);
-    }
-  return 0;
 }

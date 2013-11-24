@@ -1,4 +1,6 @@
 TODO list
 
 1. complete FCFS by fixing the errors
-2. figure out print statements
+2.fix bugs in linked list
+3. add remove method, find (for various cases),
+4. In remove dont forget to malloc all var and set to null

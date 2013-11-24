@@ -1,0 +1,23 @@
+#ifndef FCFS_H
+#define FCFS_H
+
+// Macro.  if(1) disables printing, if(0) turns it on.
+#define DEBUGPRINTF if(1){}else printf
+
+typedef struct Node Node;
+typedef struct RunningProcesses RunningProcesses;
+
+// Create your RunningProcesses struct using the filename of a schedule.txt
+RunningProcesses * createRunningProcesses();
+
+//add a process to the list
+int addProc(RunningProcesses * rpList, int procID);
+
+int removeFirstProc(RunningProcesses *rpList)
+
+int removeFirstProc(RunningProcesses *rpList)
+int removeProc(RunningProcesses * rp, int removeProcID)
+
+int printProcesses(RunningProcesses * rp)
+
+#endif // FCFS_H
