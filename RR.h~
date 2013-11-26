@@ -2,7 +2,7 @@
 #define RR_H
 
 //Macro. if(1) disable printing, if(0) turns it on.
-#define DEBUGPRINTF if(1){}else printf
+#define DEBUGPRINTF if(0){}else printf
 
 int runRR(Processes *proc, int time_interval);
 

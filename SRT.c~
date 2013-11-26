@@ -1,0 +1,113 @@
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+
+#include "processes.h"
+#include "RunningProcesses.h"
+
+int runSRT(Processes *proc, int time_interval)
+{
+
+  if(proc == NULL)
+    {
+      DEBUGPRINTF("ERROR: No process list passed to FCFS\n");
+      exit(1);
+    }
+  RunningProcesses * rp = createRunningProcesses();
+  addProc(rp,0);
+  int minTime = 999999999;//set min time to large number to start
+  Node * temp = NULL;
+  Node * currProc = NULL;//process to be run
+
+  int block = 0;
+  int arrival = 0;
+  int proc_arrival = 0;
+  int current_time = 0;
+  int finish = 0;
+  int runProcReturn = 0;
+  int runTime = time_interval;
+  while(rp->size != 0)//assumption that once this is true all processes will have finished
+    {
+
+      minTime = 999999999;//set min time to large number to start
+      //reset
+      block = 0;
+      arrival = 0;
+      proc_arrival = 0;
+      finish = 0;
+      runProcReturn = 0;
+      //
+      temp = rp->head;
+      runTime = time_interval;
+      //finds the process with the shortest remaining run time
+      while(temp != NULL)
+	{
+	  if(temp->isBlocked == 1 && temp->remainingBlockTime < runTime)
+	    {
+	      runTime = temp->remainingBlockTime;
+	    }
+	  if(temp->isBlocked == 0 && proc_time_remaining(proc, temp->procID) < minTime)
+	    {
+	      currProc = temp;
+	      minTime = proc_time_remaining(proc, temp->procID);
+	    }
+	  temp = temp->next;
+	}
+      //NOTE
+      //If CURRPROC==NULL then we can do run_noProc_check else if currProc is a proc then do run_proc
+      if (currProc != NULL)
+	{
+	  runProcReturn = run_proc(proc, currProc->procID, runTime, &block, &finish, current_time, &arrival, &proc_arrival);
+	}
+      else
+	{
+	  runProcReturn = proc_norun_check_arrival(proc, time_interval, current_time, &arrival, &proc_arrival);
+	}
+      //increment current time
+      if (runProcReturn != -1)
+	{
+	  current_time += runProcReturn;
+	}
+      //arrival found
+      if (arrival == 1)
+	{
+	  addProc(rp,proc_arrival);
+	}
+      //block found
+      if(block == 1)
+	{
+	  currProc->isBlocked = 1;
+	}
+      //finish process
+      if (finish == 1)
+	{
+	  removeProc(rp,currProc->procID);
+	}
+      
+      if (rp->size != 0)
+	{
+	  temp = rp->head;
+	}
+      //increment all times
+      while (temp != NULL  && temp->isBlocked != 0 && runProcReturn != -1)//0 is not blocked 1 is blocked
+	{
+	  if (temp->isBlocked == 1)
+	    {
+	      temp->remainingBlockTime -= runProcReturn;
+	    }
+	  if(temp->remainingBlockTime <= 0)//unblock processthat have done there time in the slammer
+	    {
+	      temp->isBlocked = 0;
+	      temp->remainingBlockTime = 200;
+	    }
+	  temp = temp->next;
+	}
+    
+      printProcesses(rp);
+      proc_print(proc);
+    }
+
+  return 0;
+}

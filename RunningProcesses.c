@@ -14,6 +14,13 @@ typedef struct Node
   struct Node *next;
   int remainingBlockTime;
   int isBlocked;
+
+  //for print proc
+  int start;
+  int end;
+  int run;
+  int blocks;
+  double utilPercent;
 }Node;
 
 typedef struct RunningProcesses
@@ -37,9 +44,17 @@ int addProc(RunningProcesses * rpList, int procID)
   //create the newProc node
   struct Node * newProc = malloc(sizeof(Node));
   newProc->procID = procID;
-  newProc->next = 0;
+  newProc->next = NULL;
   newProc->remainingBlockTime = 200;
   newProc->isBlocked = 0;
+
+  //For print proc
+  newProc->start = 0;
+  newProc->end = 0;
+  newProc->run = 0;
+  newProc->blocks = 0;
+  newProc->utilPercent = 0.0;
+  
 
   //set the head and tail appropriately in RunningProcess
   if(rpList->head == NULL)
@@ -109,9 +124,14 @@ int removeProc(RunningProcesses * rp, int removeProcID)
 	  if(temp->next->procID == removeProcID)
 	    {
 	      tempToDelete = temp->next;
+	      if(tempToDelete->next == NULL)//test if its the tail
+		{
+		  rp->tail = temp;
+		}
 	      temp->next = tempToDelete->next;
 	      tempToDelete->next = NULL;
 	      free(tempToDelete);
+	      tempToDelete = NULL;
 	      rp->size--;
 	      return 0;
 	    }
@@ -122,6 +142,59 @@ int removeProc(RunningProcesses * rp, int removeProcID)
     }
 }
 
+Node * pullProc(RunningProcesses *rp, int procID)
+{
+ 
+  Node *temp = NULL;
+  Node *tempToPull = NULL;
+  if(rp->size != 0)
+    {
+      temp = rp->head;
+    }
+  else
+    {
+      DEBUGPRINTF("ERROR: Tried to pull Proc on an empty list\n");
+      return NULL;
+    }
+  //if the proc to be removed is the head
+  if (rp->size == 1)
+    {
+      rp->head = NULL;
+      rp->tail = NULL;
+      temp->next = NULL;
+      rp->size--;
+      return temp;
+    }
+  if(rp->head->procID ==procID)
+    {
+      rp->head = temp->next;
+      temp->next = NULL;
+      rp->size--;
+      return temp;
+    }
+  //else check the LinkedList for the Node
+  else
+    {
+      while(temp->next != NULL)
+	{
+	  if(temp->next->procID == procID)
+	    {
+	      tempToPull = temp->next;
+	      if(tempToPull->next == NULL)//test if it is the tail
+		{
+		  rp->tail = temp;
+		}
+	      temp->next = tempToPull->next;
+	      tempToPull->next = NULL;
+	      rp->size--;
+	      return tempToPull;
+	    }
+	  temp = temp->next;
+	}
+
+      return NULL;
+    }
+}
 int printProcesses(RunningProcesses * rp)
 {
   Node * temp = NULL;
@@ -137,7 +210,7 @@ int printProcesses(RunningProcesses * rp)
 
   while(temp != NULL)
     {
-      printf("Process ID:%d\n",temp->procID);
+      printf("Process ID:%d Block:%d\n",temp->procID,temp->isBlocked);
       temp = temp->next;
     }
   return 0;

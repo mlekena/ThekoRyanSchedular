@@ -9,6 +9,8 @@
 #include "processes.h"
 #include "FCFS.h"
 #include "RR.h"
+#include "SRT.h"
+#include "MLQ.h"
 
 #define MAX_JOBS 100
 #define DEBUGPRINTF if(0){}else printf
@@ -120,9 +122,31 @@ int main (int argc, char * argv [])
   // done.  Arrival times will always be early enough to ensure future processes have arrived before
   // you have finished previous ones.)
 
+  //0 Shortest remaining time
+  //1 First Come First Serve
+  //2 Round Robin
+  //3 Multi-level Queue
+  switch(algorithm)
+    {
+    case 0: 
+      runSRT(proc,time_step);
+      break;
+    case 1:
+      runFCFS(proc,time_step);
+      break;
+    case 2:
+      runRR(proc,time_step);
+      break;
+    case 3:
+      runMLQ(proc,time_step);
+      break;
+    default:
+      printf("Please enter valid scheduling argument. \"%d\" is not a valid option\n", algorithm);
+      break;
+    }
+  
+  
 
-  //runFCFS(proc,time_step);
-  runRR(proc,time_step);
   print_finished();
 
   proc_destroy(proc);

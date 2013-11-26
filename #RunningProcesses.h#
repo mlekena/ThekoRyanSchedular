@@ -2,7 +2,7 @@
 #define RunningProcesses_H
 
 // Macro.  if(1) disables printing, if(0) turns it on.
-#define DEBUGPRINTF if(1){}else printf
+//#define DEBUGPRINTF if(1){}else printf
 
 typedef struct Node 
 {

@@ -1,9 +1,9 @@
-#ifndef RR_H
-#define RR_H
+#ifndef SRT_H
+#define SRT_H
 
 // Macro.  if(1) disables printing, if(0) turns it on.
 #define DEBUGPRINTF if(0){}else printf
 
-int runRR(Processes *proc, int time_interval);
+int runSRT(Processes *proc, int time_interval);
 
-#endif //RR_H
+#endif //SRT_H
