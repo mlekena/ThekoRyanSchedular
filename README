@@ -1,2 +1,8 @@
-Compile Instructions:
-gcc -Wall -g main.c processes.c -o schedule
+Ryan Rubbico
+Modupe Theko Lekena
+
+To compile:
+
+   1. Run Make from the command line
+
+

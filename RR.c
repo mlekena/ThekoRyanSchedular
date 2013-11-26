@@ -7,6 +7,7 @@
 #include "processes.h"
 #include "RunningProcesses.h"
 
+//Run the Roundd Robin schedule taking in the Processes and the system time interval
 int runRR(Processes *proc, int time_interval)
 {
   if(proc == NULL)
@@ -30,8 +31,9 @@ int runRR(Processes *proc, int time_interval)
   int runProcReturn = 0;
   int sumRunTime = 0;
   int runTime = time_interval;
-  int count = 0;
 
+  //datastructure used for the final output
+  //used to the fact that system deletes process that are done so information must be stored before the process is complete
 int startArray[10000];
   int endArray[10000];
   int runArray[10000];
@@ -48,9 +50,8 @@ int startArray[10000];
       upArray[j]=0;
     }
   //scheduling phase
-  while(/*count < 1000*/  rp->size != 0)
+  while(  rp->size != 0)
     {
-      count++;
       //reset
       if (nextToLookAt != NULL)
 	{
@@ -64,16 +65,8 @@ int startArray[10000];
       runProcReturn = 0;
       sumRunTime = 0;
       runTime = time_interval;
-      if (lastToRun->procID > 100)
-	{
 
-	  printf("hi\n");
-	}
-      // printProcesses(rp);
-      //proc_print(proc);
-      //loop through the array 
 	do{
-	  //	  printf("<<<<<<<<<<<<<<<<<<<  current proc ID = %d block:%d blocktime %d lastToRun id:%d\n", currProc->procID,currProc->isBlocked,currProc->remainingBlockTime,lastToRun->procID);
 	  if(currProc->next != NULL)
 	    {
 	      currProc = currProc->next;
@@ -83,15 +76,17 @@ int startArray[10000];
 	      currProc = rp->head;
 	    }
 	}while(currProc->isBlocked == 1 && currProc != lastToRun);
+
       //if a process that can be run is found run it till time_interval or its blocked or finishes.
       if(currProc->isBlocked == 0 )
 	{
 	  
 	  lastToRun = currProc;
+
+	  //runs the process till t completes an entire time quata
 	  while (sumRunTime < time_interval)
 	    {
-	      // printf("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ sumRunTimeof :%d must be less than time_interval of: %d\n", sumRunTime,time_interval);
-	      //printf("Sum Time = %d", sumRunTime);
+	     
 	      block = 0;
 	      arrival = 0;
 	      proc_arrival = 0;
@@ -148,7 +143,7 @@ int startArray[10000];
       temp = rp->head;
       while(temp != NULL)
 	{
-	  // printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ temp is null in RR block time update\n");
+	  
 	  if(temp->isBlocked == 1)
 	    {
 	      if ((temp->remainingBlockTime - sumRunTime) <= 0)
@@ -163,12 +158,9 @@ int startArray[10000];
 	    }
 	  temp = temp->next;
 	}
-      //printf("*********************************************current time = %d\n", current_time);
       
       
     }
-  //printProcesses(rp);
-  //proc_print(proc);
 
 // Fill in with your stats!
 	int i = 0;

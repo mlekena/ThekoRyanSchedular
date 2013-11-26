@@ -13,6 +13,7 @@ typedef struct MultiLevelQueue
 
 }MultiLevelQueue;
 
+//create a multiLevelQueue data structure
 MultiLevelQueue * create_MLQ()
 {
   MultiLevelQueue * retval = malloc(sizeof(MultiLevelQueue));
@@ -27,6 +28,7 @@ MultiLevelQueue * create_MLQ()
   return retval;
 }
 
+//add method for the multiLevelQueue
 int addMLQProc(Node * proc, int level, MultiLevelQueue * MLQ)
 {
   if(MLQ->theQueues[level]->size == 0)
@@ -47,6 +49,7 @@ int addMLQProc(Node * proc, int level, MultiLevelQueue * MLQ)
   return 0; 
 }
 
+//reduces a given process's priority
 int reducePriority(int from, int procID, MultiLevelQueue * MLQ)
 {
   if(from >= 0 && from <=2)
@@ -70,6 +73,7 @@ int reducePriority(int from, int procID, MultiLevelQueue * MLQ)
   return 0;
 }
 
+//check if all the queues are empty
 int isEmpty(MultiLevelQueue * MLQ)
 {
   if(MLQ->theQueues[0]->size == 0 && MLQ->theQueues[1]->size == 0 && MLQ->theQueues[2]->size == 0 )
@@ -79,6 +83,7 @@ int isEmpty(MultiLevelQueue * MLQ)
   return 0;
 }
 
+//used to check if queue has any prgrams not blocked
 int hasRunnableProcess(RunningProcesses * rp)//check if the queue has any unblocked processes
 {
   
@@ -113,6 +118,7 @@ int printMLQ(MultiLevelQueue *MLQ)
   return 0;
 }
 
+//runs through all the queues and updates the remaining block time 
 int updateBlockTimes(MultiLevelQueue *MLQ, int time)
 {
   Node *temp = MLQ->theQueues[0]->head;
@@ -144,6 +150,7 @@ int updateBlockTimes(MultiLevelQueue *MLQ, int time)
   return 1;
 }
 
+//runs the Mulitlevelqueue scheduling algorithm
 int runMLQ(Processes * proc, int time_interval)
 {
   MultiLevelQueue * MLQ = create_MLQ();
@@ -165,9 +172,10 @@ int runMLQ(Processes * proc, int time_interval)
   Node *temp = NULL;
   int fromLevel = 0;
   int timeQuanta = 0;
-  int count = 0;
+
   Node *arriveNode = NULL;
 
+  //used to record the final output data
   int startArray[10000];
   int endArray[10000];
   int runArray[10000];
@@ -183,9 +191,9 @@ int runMLQ(Processes * proc, int time_interval)
       blocksArray[j]=0;
       upArray[j]=0;
     }
-  while(count < 20 && isEmpty(MLQ) != 1)
+  while( isEmpty(MLQ) != 1)
     {
-      //count++;
+      
       block = 0;
       arrival = 0;
       proc_arrival = 0;
@@ -210,7 +218,7 @@ int runMLQ(Processes * proc, int time_interval)
 	    }
 	}
 
-      if (hasRunnableProcess(MLQ->theQueues[0]) == 1)
+      if (hasRunnableProcess(MLQ->theQueues[0]) == 1)//if the top queu has any programs that can even run
 	{
 	  //run on queue 0
 	  temp = MLQ->theQueues[0]->head;
@@ -223,7 +231,6 @@ int runMLQ(Processes * proc, int time_interval)
 	      
 	      temp = temp->next;
 	    }
-	  //printf("about to run ProcID: %d\n", temp->procID);
 	  runProcReturn = run_proc(proc, temp->procID, runTime, &block, &finish, current_time, &arrival, &proc_arrival);//run the proc
 	  fromLevel = 0;
 	  
@@ -235,7 +242,6 @@ int runMLQ(Processes * proc, int time_interval)
 	      runTime = time_interval * 2;
 	    }
 	  temp = MLQ->theQueues[1]->head;
-	  //printf("about to run ProcID: %d\n", temp->procID);
 	  runProcReturn = run_proc(proc, temp->procID, runTime, &block, &finish, current_time, &arrival, &proc_arrival);//run the proc
 	  fromLevel = 1;
 	  //run on queue 1
@@ -247,7 +253,6 @@ int runMLQ(Processes * proc, int time_interval)
 	      runTime = time_interval * 4;
 	    }
 	  temp = MLQ->theQueues[2]->head;
-	  //printf("about to run ProcID: %d\n", temp->procID);
 	  runProcReturn = run_proc(proc, temp->procID, runTime, &block, &finish, current_time, &arrival, &proc_arrival);//run the proc
 	  fromLevel = 2;
 	  //run on queue 2
@@ -323,14 +328,8 @@ int runMLQ(Processes * proc, int time_interval)
 	    }
 	}
       updateBlockTimes(MLQ, runProcReturn);
-
-
-      
-      
-      // printf("current time = %d>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n", current_time);
     }
-  //printMLQ(MLQ);
-//proc_print(proc);
+  
 
 // Fill in with your stats!
 	int i = 0;

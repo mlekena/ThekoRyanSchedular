@@ -9,11 +9,15 @@
 
 
 
+/*
 
+Method to run a shortest remaining time scheduling routine
+
+*/
 int runSRT(Processes *proc, int time_interval)
 {
 
-  if(proc == NULL)
+  if(proc == NULL)// if there is no valid list of procs then exit
     {
       DEBUGPRINTF("ERROR: No process list passed to FCFS\n");
       exit(1);
@@ -23,7 +27,7 @@ int runSRT(Processes *proc, int time_interval)
   int minTime = 999999999;//set min time to large number to start
   Node * temp = NULL;
   Node * currProc = NULL;//process to be run
-
+  //declare phase
   int block = 0;
   int arrival = 0;
   int proc_arrival = 0;
@@ -32,6 +36,7 @@ int runSRT(Processes *proc, int time_interval)
   int runProcReturn = 0;
   int runTime = time_interval;
 
+  //initilize variables for printing at end
   int startArray[10000];
   int endArray[10000];
   int runArray[10000];
@@ -52,7 +57,7 @@ int runSRT(Processes *proc, int time_interval)
     {
 
       minTime = 999999999;//set min time to large number to start
-      //reset
+      //reset variables 
       block = 0;
       arrival = 0;
       proc_arrival = 0;
@@ -63,16 +68,14 @@ int runSRT(Processes *proc, int time_interval)
       temp = rp->head;
       runTime = time_interval;
       //finds the process with the shortest remaining run time
-      //printf("the id of the HEAD: %d\n", temp->procID);
-      //printf("SIZE = %d\n", rp->size);
       if(rp->size < 1)
 	{
 	  return 0;
 	}
 
-      while(temp != NULL)
+      while(temp != NULL)//finds next available process to run with the SRT and prepares preemeption 
 	{
-	  // printf("temp is not null\n");
+	  
 	 
 	  if(temp->isBlocked == 1 && temp->remainingBlockTime < runTime)
 	    {
@@ -85,25 +88,20 @@ int runSRT(Processes *proc, int time_interval)
 	    }
 	  temp = temp->next;
 	}
-      // printProcesses(rp);
-      // printf("out the loop\n");
+     
 
       //NOTE
       //If CURRPROC==NULL then we can do run_noProc_check else if currProc is a proc then do run_proc
       if (currProc != NULL)
 	{
-	  //printf("ProcID = %d\n", currProc->procID);
 	  runProcReturn = run_proc(proc, currProc->procID, runTime, &block, &finish, current_time, &arrival, &proc_arrival);
 	}
-      else
+      else//all process are blocked to run proc_norun_check_arrival
 	{
-	  //printf("Im about to do a proc_norun_check_arrival\n");
 	  runProcReturn = proc_norun_check_arrival(proc, time_interval, current_time, &arrival, &proc_arrival);
 	  totalIdle += runProcReturn;
-	  //printf("Proc No Run");
 	}
       //increment current time
-      //printf("run proc return = %d\n", runProcReturn);
       if (runProcReturn != -1)
 	{
 	  current_time += runProcReturn;
@@ -130,7 +128,7 @@ int runSRT(Processes *proc, int time_interval)
 	  
 	}
       
-      if (rp->size != 0)
+      if (rp->size != 0)//set temp to equal head again
 	{
 	  temp = rp->head;
 	}
@@ -139,7 +137,6 @@ int runSRT(Processes *proc, int time_interval)
       //increment all times
       while (temp != NULL  && temp->isBlocked != 0 && runProcReturn != -1)//0 is not blocked 1 is blocked
 	{
-	  // printf("########################################\n");
 	  if (temp->isBlocked == 1)
 	    {
 	      temp->remainingBlockTime -= runProcReturn;
@@ -151,13 +148,9 @@ int runSRT(Processes *proc, int time_interval)
 	    }
 	  temp = temp->next;
 	}
-    
-      //printProcesses(rp);
-      //proc_print(proc);      
+       
       
     }
-  //printProcesses(rp);
-//proc_print(proc);
 
       // Fill in with your stats!
 	int i = 0;
